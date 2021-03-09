@@ -1,0 +1,28 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: swagger-manage
+  datasource:
+    url: jdbc:mysql://10.0.42.23:3306/swagger_admin?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai
+    username: swaggeradm
+    password: swagger123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      max-lifetime: 500000
+
+mybatis:
+  mapper-locations: classpath:mybatis/*.xml
+  # 下划线格式转换成驼峰格式
+  configuration:
+    map-underscore-to-camel-case: true
+
+swagger:
+  resources-path: /swagger-resources
+  use-v2: false
+  refresh: true
+
+logging:
+  level:
+    com.mafgwo: info

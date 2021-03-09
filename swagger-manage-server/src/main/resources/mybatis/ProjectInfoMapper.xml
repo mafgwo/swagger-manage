@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE  mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- generate by https://gitee.com/durcframework/code-gen -->
+<mapper namespace="com.mafgwo.swagger.manage.server.mapper.ProjectInfoMapper">
+    <resultMap id="BaseResultMap" type="com.mafgwo.swagger.manage.server.entity.ProjectInfo">
+        <result column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="gateway_rule" property="gatewayRule" />
+        <result column="gateway_host" property="gatewayHost" />
+        <result column="host" property="host" />
+        <result column="is_import" property="isImport" />
+        <result column="basic_auth_username" property="basicAuthUsername" />
+        <result column="basic_auth_password" property="basicAuthPassword" />
+    </resultMap>
+
+    <!-- 表字段 -->
+    <sql id="baseColumns">
+         t.id
+        , t.name
+        , t.gateway_rule
+        , t.gateway_host
+        , t.host
+        , t.is_import
+        , t.basic_auth_username
+        , t.basic_auth_password
+        </sql>
+
+    <!-- 查询全部 -->
+    <select id="listAll" resultMap="BaseResultMap">
+        SELECT
+        <include refid="baseColumns" />
+        FROM project_info t
+    </select>
+
+    <!-- 根据主键获取单条记录 -->
+    <select id="getById" resultMap="BaseResultMap" parameterType="Integer">
+        SELECT
+        <include refid="baseColumns" />
+        FROM project_info t
+        WHERE id = #{id}
+    </select>
+
+    <!-- 插入全部字段 -->
+    <insert id="insert" parameterType="com.mafgwo.swagger.manage.server.entity.ProjectInfo"
+            keyProperty="id" keyColumn="id" useGeneratedKeys="true"
+    >
+        INSERT INTO project_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            name,
+            gateway_rule,
+            gateway_host,
+            host,
+            is_import,
+            basic_auth_username,
+            basic_auth_password,
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            #{name},
+            #{gatewayRule},
+            #{gatewayHost},
+            #{host},
+            #{isImport},
+            #{basicAuthUsername},
+            #{basicAuthPassword},
+        </trim>
+    </insert>
+
+    <!-- 插入不为NULL的字段 -->
+    <insert id="insertIgnoreNull" parameterType="com.mafgwo.swagger.manage.server.entity.ProjectInfo"
+            keyProperty="id" keyColumn="id" useGeneratedKeys="true"
+    >
+        INSERT INTO project_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+
+            <if test="name != null">
+                name,
+            </if>
+            <if test="gatewayRule != null">
+                gateway_rule,
+            </if>
+            <if test="gatewayHost != null">
+                gateway_host,
+            </if>
+            <if test="host != null">
+                host,
+            </if>
+            <if test="isImport != null">
+                is_import,
+            </if>
+            <if test="basicAuthUsername != null">
+                basic_auth_username,
+            </if>
+            <if test="basicAuthPassword != null">
+                basic_auth_password,
+            </if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="name != null" >
+                #{name},
+            </if>
+            <if test="gatewayRule != null">
+                #{gatewayRule},
+            </if>
+            <if test="gatewayHost != null">
+                #{gatewayHost},
+            </if>
+            <if test="host != null" >
+                #{host},
+            </if>
+            <if test="isImport != null" >
+                #{isImport},
+            </if>
+            <if test="basicAuthUsername != null" >
+                #{basicAuthUsername},
+            </if>
+            <if test="basicAuthPassword != null" >
+                #{basicAuthPassword},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 更新,更新全部字段 -->
+    <update id="update" parameterType="com.mafgwo.swagger.manage.server.entity.ProjectInfo">
+        UPDATE project_info
+        <set>
+            name=#{name},
+            gateway_rule=#{gatewayRule},
+            gateway_host=#{gatewayHost},
+            host=#{host},
+            is_import=#{isImport},
+            basic_auth_username=#{basicAuthUsername},
+            basic_auth_password=#{basicAuthPassword},
+        </set>
+        WHERE id = #{id}
+    </update>
+
+
+    <!-- 更新不为NULL的字段 -->
+    <update id="updateIgnoreNull" parameterType="com.mafgwo.swagger.manage.server.entity.ProjectInfo">
+        UPDATE project_info
+        <set>
+            <if test="name != null" >
+                name=#{name},
+            </if>
+            <if test="gatewayRule != null" >
+                gateway_rule=#{gatewayRule},
+            </if>
+            <if test="gatewayHost != null" >
+                gateway_host=#{gatewayHost},
+            </if>
+            <if test="host != null" >
+                host=#{host},
+            </if>
+            <if test="isImport != null" >
+                is_import=#{isImport},
+            </if>
+            <if test="basicAuthUsername != null" >
+                basic_auth_username=#{basicAuthUsername},
+            </if>
+            <if test="basicAuthPassword != null" >
+                basic_auth_password=#{basicAuthPassword},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+
+    <!-- 根据主键删除记录 -->
+    <delete id="delete" parameterType="com.mafgwo.swagger.manage.server.entity.ProjectInfo">
+		DELETE FROM project_info WHERE id = #{id}
+	</delete>
+
+
+    <select id="getByHost" resultMap="BaseResultMap">
+        SELECT
+        <include refid="baseColumns" />
+        FROM project_info t
+        WHERE host = #{value}
+        LIMIT 1
+    </select>
+</mapper>

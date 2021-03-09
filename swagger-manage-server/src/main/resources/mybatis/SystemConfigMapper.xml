@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE  mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- generate by https://gitee.com/durcframework/code-gen -->
+<mapper namespace="com.mafgwo.swagger.manage.server.mapper.SystemConfigMapper">
+    <resultMap id="BaseResultMap" type="com.mafgwo.swagger.manage.server.entity.SystemConfig">
+        <result column="id" property="id" />
+        <result column="project_id" property="projectId" />
+        <result column="type" property="type" />
+        <result column="config_key" property="configKey" />
+        <result column="config_value" property="configValue" />
+    </resultMap>
+
+    <!-- 表字段 -->
+    <sql id="baseColumns">
+         t.id
+        , t.project_id
+        , t.type
+        , t.config_key
+        , t.config_value
+        </sql>
+
+    <!-- 查询全部 -->
+    <select id="listAll" resultMap="BaseResultMap">
+        SELECT
+        <include refid="baseColumns" />
+        FROM system_config t
+    </select>
+
+    <!-- 根据主键获取单条记录 -->
+    <select id="getById" resultMap="BaseResultMap" parameterType="Integer">
+        SELECT
+        <include refid="baseColumns" />
+        FROM system_config t
+        WHERE id = #{id}
+    </select>
+
+    <!-- 插入全部字段 -->
+    <insert id="insert" parameterType="com.mafgwo.swagger.manage.server.entity.SystemConfig"
+            keyProperty="id" keyColumn="id" useGeneratedKeys="true"
+    >
+        INSERT INTO system_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            project_id,
+            type,
+            config_key,
+            config_value,
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            #{projectId},
+            #{type},
+            #{configKey},
+            #{configValue},
+        </trim>
+    </insert>
+
+    <!-- 插入不为NULL的字段 -->
+    <insert id="insertIgnoreNull" parameterType="com.mafgwo.swagger.manage.server.entity.SystemConfig"
+            keyProperty="id" keyColumn="id" useGeneratedKeys="true"
+    >
+        INSERT INTO system_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+
+            <if test="projectId != null">
+                project_id,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="configKey != null">
+                config_key,
+            </if>
+            <if test="configValue != null">
+                config_value,
+            </if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="projectId != null" >
+                #{projectId},
+            </if>
+            <if test="type != null" >
+                #{type},
+            </if>
+            <if test="configKey != null" >
+                #{configKey},
+            </if>
+            <if test="configValue != null" >
+                #{configValue},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 更新,更新全部字段 -->
+    <update id="update" parameterType="com.mafgwo.swagger.manage.server.entity.SystemConfig">
+        UPDATE system_config
+        <set>
+            project_id=#{projectId},
+            type=#{type},
+            config_key=#{configKey},
+            config_value=#{configValue},
+        </set>
+        WHERE id = #{id}
+    </update>
+
+
+    <!-- 更新不为NULL的字段 -->
+    <update id="updateIgnoreNull" parameterType="com.mafgwo.swagger.manage.server.entity.SystemConfig">
+        UPDATE system_config
+        <set>
+            <if test="projectId != null" >
+                project_id=#{projectId},
+            </if>
+            <if test="type != null" >
+                type=#{type},
+            </if>
+            <if test="configKey != null" >
+                config_key=#{configKey},
+            </if>
+            <if test="configValue != null" >
+                config_value=#{configValue},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+
+    <!-- 根据主键删除记录 -->
+    <delete id="delete" parameterType="com.mafgwo.swagger.manage.server.entity.SystemConfig">
+		DELETE FROM system_config WHERE id = #{id}
+	</delete>
+
+    <!-- 查询全局headers-->
+    <select id="listGlobalHeaders" resultMap="BaseResultMap">
+        SELECT
+        <include refid="baseColumns"/>
+        FROM system_config t
+        WHERE t.project_id = #{value} AND t.type=1
+    </select>
+
+    <select id="getCommonConfig" resultMap="BaseResultMap">
+        SELECT
+        <include refid="baseColumns"/>
+        FROM system_config t
+        WHERE t.type=0 AND config_key=#{value}
+    </select>
+
+
+</mapper>

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE  mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- generate by https://gitee.com/durcframework/code-gen -->
+<mapper namespace="com.mafgwo.swagger.manage.server.mapper.SwaggerInfoMapper">
+    <resultMap id="BaseResultMap" type="com.mafgwo.swagger.manage.server.entity.SwaggerInfo">
+        <result column="id" property="id" />
+        <result column="project_id" property="projectId" />
+        <result column="name" property="name" />
+        <result column="url" property="url" />
+        <result column="doc_content" property="docContent" />
+    </resultMap>
+
+    <!-- 表字段 -->
+    <sql id="baseColumns">
+         t.id
+        , t.project_id
+        , t.name
+        , t.url
+        , t.doc_content
+        </sql>
+
+    <!-- 查询全部 -->
+    <select id="listAll" resultMap="BaseResultMap">
+        SELECT
+        <include refid="baseColumns" />
+        FROM swagger_info t
+    </select>
+
+    <!-- 根据主键获取单条记录 -->
+    <select id="getById" resultMap="BaseResultMap" parameterType="Integer">
+        SELECT
+        <include refid="baseColumns" />
+        FROM swagger_info t
+        WHERE id = #{id}
+    </select>
+
+    <!-- 插入全部字段 -->
+    <insert id="insert" parameterType="com.mafgwo.swagger.manage.server.entity.SwaggerInfo"
+            keyProperty="id" keyColumn="id" useGeneratedKeys="true"
+    >
+        INSERT INTO swagger_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            project_id,
+            name,
+            url,
+            doc_content,
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            #{projectId},
+            #{name},
+            #{url},
+            #{docContent},
+        </trim>
+    </insert>
+
+    <!-- 插入不为NULL的字段 -->
+    <insert id="insertIgnoreNull" parameterType="com.mafgwo.swagger.manage.server.entity.SwaggerInfo"
+            keyProperty="id" keyColumn="id" useGeneratedKeys="true"
+    >
+        INSERT INTO swagger_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+
+            <if test="projectId != null">
+                project_id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="url != null">
+                url,
+            </if>
+            <if test="docContent != null">
+                doc_content,
+            </if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="projectId != null" >
+                #{projectId},
+            </if>
+            <if test="name != null" >
+                #{name},
+            </if>
+            <if test="url != null" >
+                #{url},
+            </if>
+            <if test="docContent != null" >
+                #{docContent},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 更新,更新全部字段 -->
+    <update id="update" parameterType="com.mafgwo.swagger.manage.server.entity.SwaggerInfo">
+        UPDATE swagger_info
+        <set>
+            project_id=#{projectId},
+            name=#{name},
+            url=#{url},
+            doc_content=#{docContent},
+        </set>
+        WHERE id = #{id}
+    </update>
+
+
+    <!-- 更新不为NULL的字段 -->
+    <update id="updateIgnoreNull" parameterType="com.mafgwo.swagger.manage.server.entity.SwaggerInfo">
+        UPDATE swagger_info
+        <set>
+            <if test="projectId != null" >
+                project_id=#{projectId},
+            </if>
+            <if test="name != null" >
+                name=#{name},
+            </if>
+            <if test="url != null" >
+                url=#{url},
+            </if>
+            <if test="docContent != null" >
+                doc_content=#{docContent},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+
+    <!-- 根据主键删除记录 -->
+    <delete id="delete" parameterType="com.mafgwo.swagger.manage.server.entity.SwaggerInfo">
+		DELETE FROM swagger_info WHERE id = #{id}
+	</delete>
+
+
+    <select id="listByProjectId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="baseColumns"/>
+        FROM swagger_info t
+        WHERE t.project_id=#{value}
+    </select>
+
+    <select id="listGroupByProjectId" resultMap="BaseResultMap">
+        SELECT
+        t.id
+        , t.project_id
+        , t.name
+        FROM swagger_info t
+        WHERE t.project_id=#{value}
+    </select>
+
+    <select id="getFirst" resultMap="BaseResultMap">
+        SELECT
+        t.id
+        , t.project_id
+        , t.name
+        FROM swagger_info t
+        ORDER BY t.id
+        LIMIT 1
+    </select>
+
+    <delete id="deleteByProjectId">
+        DELETE FROM swagger_info WHERE project_id=#{projectId}
+    </delete>
+
+    <delete id="deleteBatch">
+		DELETE FROM swagger_info WHERE id in
+		<foreach collection="items" item="po" open="(" separator="," close=")">
+            #{po.id}
+        </foreach>
+	</delete>
+
+</mapper>
