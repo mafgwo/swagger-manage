@@ -342,6 +342,9 @@ export default {
     gatewayUrl: {
       get() {
         let url = this.requestGatewayUrl
+        if (!url) {
+          return null;
+        }
         this.pathData.forEach(row => {
           url = url.replace(new RegExp(`{${row.name}}`), row.example || `{${row.name}}`)
         })
