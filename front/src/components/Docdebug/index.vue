@@ -2,19 +2,19 @@
   <div class="doc-debug">
     <el-row :gutter="20">
       <el-col :span="24-rightSpanSize">
-        <el-input v-model="url" :readonly="pathData.length > 0" class="request-url">
+        <el-input v-model="url" class="request-url">
           <span slot="prepend">
             服务接口 {{ currentMethod }}
           </span>
           <el-button slot="append" :loading="sendLoading" style="width: 100px" @click="send"> 发 送 </el-button>
         </el-input>
-        <el-input v-if="gatewayUrl" v-model="gatewayUrl" :readonly="pathData.length > 0" class="request-url" style="margin-top: 5px;">
+        <el-input v-if="gatewayUrl" v-model="gatewayUrl" class="request-url" style="margin-top: 5px;">
           <span slot="prepend">
             网关接口 {{ currentMethod }}
           </span>
           <el-button slot="append" :loading="sendLoading" style="width: 100px" @click="sendGateway"> 发 送 </el-button>
         </el-input>
-        <el-input v-if="gatewayUrl" v-model="authorization" :readonly="pathData.length > 0" placeholder="网关token,用户登录成功后的token" class="request-url" style="margin-top: 5px;">
+        <el-input v-if="gatewayUrl" v-model="authorization" placeholder="网关token,用户登录成功后的token" class="request-url" style="margin-top: 5px;">
           <span slot="prepend">
             网关token
           </span>
