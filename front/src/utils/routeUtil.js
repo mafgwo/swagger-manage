@@ -71,7 +71,7 @@ Object.assign(Vue.prototype, {
           path: `/swagger/${item.swaggerId}/` + this.encodePathAndMethod(item.path, item.method),
           name: `Doc_${docInfo.swaggerId}_${name_id++}`,
           component: docPage,
-          meta: { title: item.summary, description: item.description, swaggerId: item.swaggerId, path: item.path, method: item.method, module: item.module }
+          meta: { title: item.summary, description: item.description, swaggerId: item.swaggerId, path: item.path, gatewayUrl: item.gatewayUrl, method: item.method, module: item.module }
         }
         if (values.length > 1) {
           const child_children = []
@@ -80,7 +80,7 @@ Object.assign(Vue.prototype, {
               path: `/swagger/${child_item.swaggerId}/` + this.encodePathAndMethod(child_item.path, child_item.method),
               name: `Doc_${docInfo.swaggerId}_${name_id++}`,
               component: docPage,
-              meta: { title: child_item.method, parentTitle: item.summary, swaggerId: child_item.swaggerId, path: child_item.path, method: child_item.method }
+              meta: { title: child_item.method, parentTitle: item.summary, swaggerId: child_item.swaggerId, path: child_item.path, gatewayUrl: child_item.gatewayUrl, method: child_item.method }
             })
           })
           child.children = child_children

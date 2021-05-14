@@ -155,7 +155,8 @@ export default {
             const child = children[i]
             const meta = child.meta
             const find = (
-              this.isMatch(child.path, searchText) ||
+              this.isMatch(meta.gatewayUrl, searchText) ||
+              this.isMatch(meta.path, searchText) ||
               this.isMatch(meta.title, searchText) ||
               this.isMatch(meta.description, searchText) ||
               this.isMatch(meta.summary, searchText) ||
