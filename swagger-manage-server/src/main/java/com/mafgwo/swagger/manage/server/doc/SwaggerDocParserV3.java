@@ -268,6 +268,11 @@ public class SwaggerDocParserV3 implements DocParser {
                     })
                     .orElse("string"));
             docParameter.setElementType(elementType);
+        } else if (type == null) {
+            String refStr = fieldJson.getString("$ref");
+            if (refStr != null) {
+                docParameter.setElementType(refStr.substring(refStr.lastIndexOf("/") + 1));
+            }
         }
         this.setEnum(fieldJson, docParameter);
     }

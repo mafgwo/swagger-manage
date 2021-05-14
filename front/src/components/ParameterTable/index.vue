@@ -37,6 +37,11 @@
             <i class="el-icon-info" />
           </el-tooltip>
         </span>
+        <span v-show="scope.row.type === 'object' && scope.row.elementType">
+          <el-tooltip effect="dark" :content="`对象类型：${scope.row.elementType}`" placement="top">
+            <i class="el-icon-info" />
+          </el-tooltip>
+        </span>
       </template>
     </el-table-column>
     <el-table-column
