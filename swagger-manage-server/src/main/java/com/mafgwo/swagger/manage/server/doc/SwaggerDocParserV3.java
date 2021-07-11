@@ -178,10 +178,12 @@ public class SwaggerDocParserV3 implements DocParser {
             if (refInfo == null) {
                 if (schemaJson != null && "array".equals(schemaJson.getString("type")) && schemaJson.getJSONObject("items") != null) {
                     DocParameter docParameter = fieldJson.toJavaObject(DocParameter.class);
-                    docParameter.setIn("body");
-                    docParameter.setType("array" + "(" + schemaJson.getJSONObject("items").getString("type") + ")");
-                    docParameterList.add(docParameter);
-                    return formatDocParameters(docParameterList);
+                    if (StringUtils.isEmpty(docParameter.getIn())) {
+                        docParameter.setType("array" + "(" + schemaJson.getJSONObject("items").getString("type") + ")");
+                        docParameter.setIn("body");
+                        docParameterList.add(docParameter);
+                        return formatDocParameters(docParameterList);
+                    }
                 }
                 refInfo = getRefInfo(fieldJson.getJSONObject("items"));
             }
