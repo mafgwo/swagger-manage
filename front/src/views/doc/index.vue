@@ -32,6 +32,10 @@
         <parameter-table :data="formatParameters(item.requestParameters)" :show-in="true" />
         <h3>返回参数</h3>
         <parameter-table :data="formatParameters(item.responseParameters)" />
+        <h3>请求参数typescript代码</h3>
+        <pre class="normal-text">{{ trans2TsInterfaceStr(item.requestParameters, false) }}</pre>
+        <h3>返回参数typescript代码</h3>
+        <pre class="normal-text">{{ trans2TsInterfaceStr(item.responseParameters, true) }}</pre>
         <h3>返回示例</h3>
         <pre class="normal-text">{{ JSON.stringify(createResponseExample(item.responseParameters), null, 4) }}</pre>
       </el-tab-pane>
@@ -61,6 +65,8 @@ export default {
     return {
       active: 'info',
       item: {
+        swaggerId: undefined,
+        path: undefined,
         method: '',
         consumes: [],
         produces: [],
@@ -106,6 +112,69 @@ export default {
       return params.filter(row => {
         return row.in === 'header'
       })
+    },
+    trans2TsInterfaceStr(params, isResp) {
+      return this.trans2TsInterface(null, params, isResp, [])
+    },
+    trans2TsInterface(fieldType, params, isResp, allElementTypes) {
+      if (params == null) {
+        return ''
+      }
+      // 有就不重复建
+      if (fieldType != null && allElementTypes.indexOf(fieldType) >= 0) {
+        return ''
+      }
+      let str = fieldType != null ? '\n\n' : ''
+      str += 'interface '
+      str += this.getInterfaceName(fieldType, isResp)
+      str += ' {'
+      const subElements = []
+      allElementTypes.push(fieldType)
+      params.forEach(param => {
+        const line = this.trans2TsFieldStr(param, isResp)
+        str += line
+        if ((param.type === 'object' || param.type === 'array') && param.elementType != null) {
+          subElements.push(param)
+        }
+      })
+      str += '\n}'
+      subElements.forEach(param => {
+        str += this.trans2TsInterface(param.elementType, param.refs, isResp, allElementTypes)
+      })
+      return str
+    },
+    trans2TsFieldStr(param, isResp) {
+      if (param.type == null || param.name == null) {
+        return ''
+      }
+      let tsType = param.type
+      if (tsType === 'integer') {
+        tsType = 'number'
+      }
+      if (param.type === 'object' || param.type === 'array') {
+        tsType = this.getInterfaceName(param.elementType, isResp)
+      }
+      return '\n  /** ' +
+        (!isResp ? (param.required ? '必填 ' : '非必填 ') : '') +
+        (param.description ? param.description : '') + ' */\n  ' +
+        param.name + '?: ' + tsType + (param.type === 'array' ? '[]' : '')
+    },
+    getInterfaceName(fieldType, isResp) {
+      if (fieldType == null) {
+        return (isResp ? 'Resp' : 'Req')
+      }
+      const index = fieldType.indexOf('«')
+      if (index >= 0) {
+        fieldType = fieldType.substr(0, index)
+      } else {
+        fieldType = fieldType.replace('对象', '')
+      }
+      if (fieldType.endsWith('VO')) {
+        fieldType = fieldType.substr(0, fieldType.length - 2)
+      } else if (fieldType.endsWith('DTO')) {
+        fieldType = fieldType.substr(0, fieldType.length - 3)
+      }
+      return fieldType + (isResp ? 'Resp' : 'Req')
     }
   }
 }

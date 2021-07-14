@@ -19,9 +19,9 @@
             网关token
           </span>
         </el-input>
-        <div v-show="pathData.length > 0" class="path-param">
+        <div v-show="requestInfo.pathData.length > 0" class="path-param">
           <el-table
-            :data="pathData"
+            :data="requestInfo.pathData"
             border
             :header-cell-style="cellStyle"
             :cell-style="cellStyle"
@@ -52,12 +52,12 @@
         <el-collapse v-model="collapseActive" accordion style="margin-top: 10px;">
           <el-collapse-item title="Headers" name="header">
             <span slot="title" class="result-header-label">
-              <span>Headers <span class="param-count">({{ headerData.length + globalHeaderData.length }})</span></span>
+              <span>Headers <span class="param-count">({{ requestInfo.headerData.length + requestInfo.globalHeaderData.length }})</span></span>
             </span>
             <div>
               <h4>全局Headers</h4>
               <el-table
-                :data="globalHeaderData"
+                :data="requestInfo.globalHeaderData"
                 border
                 :header-cell-style="cellStyleSmall()"
                 :cell-style="cellStyleSmall()"
@@ -74,10 +74,10 @@
                 </el-table-column>
               </el-table>
             </div>
-            <div v-show="headerData.length > 0">
+            <div v-show="requestInfo.headerData.length > 0">
               <h4>接口Headers</h4>
               <el-table
-                :data="headerData"
+                :data="requestInfo.headerData"
                 border
                 :header-cell-style="cellStyle"
                 :cell-style="cellStyle"
@@ -96,17 +96,17 @@
             </div>
           </el-collapse-item>
         </el-collapse>
-        <el-tabs v-model="requestActive" type="card" style="margin-top: 10px">
+        <el-tabs v-model="requestInfo.requestActive" type="card" style="margin-top: 10px">
           <el-tab-pane label="Body" name="body">
             <span slot="label" class="result-header-label">
               <el-badge :is-dot="hasBody()" type="danger">
                 <span>Body</span>
               </el-badge>
             </span>
-            <el-radio-group v-model="postActive" size="small" style="margin-bottom: 20px;">
+            <el-radio-group v-model="requestInfo.postActive" size="small" style="margin-bottom: 20px;">
               <el-radio-button label="text" class="json-badge">Text</el-radio-button>
-              <el-radio-button label="form">x-www-form-urlencoded <span class="param-count">({{ formData.length }})</span></el-radio-button>
-              <el-radio-button label="multipart">multipart <span class="param-count">({{ multipartData.length }})</span></el-radio-button>
+              <el-radio-button label="form">x-www-form-urlencoded <span class="param-count">({{ requestInfo.formData.length }})</span></el-radio-button>
+              <el-radio-button label="multipart">multipart <span class="param-count">({{ requestInfo.multipartData.length }})</span></el-radio-button>
             </el-radio-group>
             <div v-show="showBody('text')">
               <el-radio-group v-model="contentType" style="margin-bottom: 10px;">
@@ -118,13 +118,13 @@
               </el-radio-group>
               <el-form>
                 <el-form-item label-width="0">
-                  <el-input v-model="jsonBody" type="textarea" :autosize="{ minRows: 2, maxRows: 100}" />
+                  <el-input v-model="requestInfo.jsonBody" type="textarea" :autosize="{ minRows: 2, maxRows: 100}" />
                 </el-form-item>
               </el-form>
             </div>
             <div v-show="showBody('form')">
               <el-table
-                :data="formData"
+                :data="requestInfo.formData"
                 border
                 :header-cell-style="cellStyle"
                 :cell-style="cellStyle"
@@ -165,7 +165,7 @@
               </el-upload>
               <el-table
                 v-show="showBody('multipart')"
-                :data="multipartData"
+                :data="requestInfo.multipartData"
                 border
                 :header-cell-style="cellStyle"
                 :cell-style="cellStyle"
@@ -206,10 +206,10 @@
           </el-tab-pane>
           <el-tab-pane label="Query" name="query">
             <span slot="label" class="result-header-label">
-              <span>Query <span class="param-count">({{ queryData.length }})</span></span>
+              <span>Query <span class="param-count">({{ requestInfo.queryData.length }})</span></span>
             </span>
             <el-table
-              :data="queryData"
+              :data="requestInfo.queryData"
               border
               :header-cell-style="cellStyle"
               :cell-style="cellStyle"
@@ -238,6 +238,20 @@
             </el-table>
           </el-tab-pane>
         </el-tabs>
+        <div style="margin-top: 10px;">
+          <el-button type="primary" size="small" @click="saveCase">保存用例</el-button>
+          <div style="margin-top: 10px;">
+            <el-tag
+              v-for="(caseItem, index) in cases"
+              :key="index"
+              closable
+              style="margin-right: 10px;"
+              @close="handleCloseCase(caseItem)"
+            >
+              <a @click="useCase(caseItem)">{{ caseItem.name }}</a>
+            </el-tag>
+          </div>
+        </div>
       </el-col>
       <el-col :span="rightSpanSize" style="border-left: 1px #E4E7ED solid;">
         <div class="result-status">
@@ -300,22 +314,24 @@ export default {
       requestGatewayUrl: '',
       // 网关请求时需要
       authorization: '',
-      jsonBody: '',
       contentType: 'application/json;charset=UTF-8',
-      requestActive: 'body',
-      postActive: 'form',
       collapseActive: '',
-      formData: [],
-      multipartData: [],
-      queryData: [],
+      requestInfo: {
+        requestActive: 'body',
+        postActive: 'form',
+        jsonBody: '',
+        formData: [],
+        multipartData: [],
+        queryData: [],
+        headerData: [],
+        globalHeaderData: [],
+        pathData: []
+      },
       uploadFiles: [],
       fieldTypes: [
         { type: 'text', label: '文本' },
         { type: 'file', label: '文件' }
       ],
-      globalHeaderData: [],
-      headerData: [],
-      pathData: [],
       resultActive: 'result',
       sendLoading: false,
       result: {
@@ -323,14 +339,16 @@ export default {
         headerData: [],
         content: '',
         status: 0
-      }
+      },
+      // 用例
+      cases: []
     }
   },
   computed: {
     url: {
       get() {
         let url = this.requestUrl
-        this.pathData.forEach(row => {
+        this.requestInfo.pathData.forEach(row => {
           url = url.replace(new RegExp(`{${row.name}}`), row.example || `{${row.name}}`)
         })
         return url
@@ -343,9 +361,9 @@ export default {
       get() {
         let url = this.requestGatewayUrl
         if (!url) {
-          return null;
+          return null
         }
-        this.pathData.forEach(row => {
+        this.requestInfo.pathData.forEach(row => {
           url = url.replace(new RegExp(`{${row.name}}`), row.example || `{${row.name}}`)
         })
         return url
@@ -368,7 +386,116 @@ export default {
       this.requestGatewayUrl = item.gatewayUrl
       this.bindRequestParam(item)
       this.loadGlobalHeaders(resp => {
-        this.globalHeaderData = resp.data
+        this.requestInfo.globalHeaderData = resp.data
+      })
+      this.loadCases(item)
+    },
+    loadCases(item) {
+      if (!item.swaggerId) {
+        return
+      }
+      this.get('/doc-cases', { swaggerId: item.swaggerId, path: item.path, method: item.method }, (resp) => {
+        this.cases = resp.data
+      })
+    },
+    useCase(caseObj) {
+      const requestInfo = JSON.parse(caseObj.content)
+      this.authorization = requestInfo.authorization
+      this.requestInfo.requestActive = requestInfo.requestActive
+      this.requestInfo.postActive = requestInfo.postActive
+      this.requestInfo.jsonBody = requestInfo.jsonBody
+      this.replaceFieldValue(this.requestInfo.formData, 'name', 'example', requestInfo.formData)
+      this.replaceFieldValue(this.requestInfo.multipartData, 'name', 'example', requestInfo.multipartData)
+      this.replaceFieldValue(this.requestInfo.queryData, 'name', 'example', requestInfo.queryData)
+      this.replaceFieldValue(this.requestInfo.headerData, 'name', 'example', requestInfo.headerData)
+      this.replaceFieldValue(this.requestInfo.globalHeaderData, 'configKey', 'configValue', requestInfo.globalHeaderData)
+      this.replaceFieldValue(this.requestInfo.pathData, 'name', 'example', requestInfo.pathData)
+      this.$message({
+        type: 'info',
+        message: '已使用用例' + caseObj.name
+      })
+    },
+    replaceFieldValue(items, keyProp, valueProp, replaceMap) {
+      if (!replaceMap) {
+        return
+      }
+      if (!items) {
+        return
+      }
+      items.forEach(item => {
+        item[valueProp] = replaceMap[item[keyProp]]
+      })
+    },
+    // 构造所有的参数与值
+    getParamMap() {
+      return {
+        authorization: this.authorization,
+        requestActive: this.requestInfo.requestActive,
+        postActive: this.requestInfo.postActive,
+        jsonBody: this.requestInfo.jsonBody,
+        formData: this.paramToMap(this.requestInfo.formData, 'name', 'example'),
+        multipartData: this.paramToMap(this.requestInfo.multipartData, 'name', 'example'),
+        queryData: this.paramToMap(this.requestInfo.queryData, 'name', 'example'),
+        headerData: this.paramToMap(this.requestInfo.headerData, 'name', 'example'),
+        globalHeaderData: this.paramToMap(this.requestInfo.globalHeaderData, 'configKey', 'configValue'),
+        pathData: this.paramToMap(this.requestInfo.pathData, 'name', 'example')
+      }
+    },
+    paramToMap(arr, keyProp, valueProp) {
+      const obj = {}
+      arr.forEach(item => {
+        const key = item[keyProp]
+        obj[key] = item[valueProp]
+      })
+      return obj
+    },
+    handleCloseCase(caseItem) {
+      // 删除二次确认
+      this.$confirm('确认删除', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(() => {
+        this.request('DELETE', '/doc-cases/' + caseItem.id, {}, {}, false, false, false, () => {
+          this.cases.splice(this.cases.indexOf(caseItem), 1)
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消保存用例'
+        })
+      })
+    },
+    saveCase() {
+      this.$prompt('请输入用例名称', '保存用例', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputErrorMessage: '用例名必须填写'
+      }).then(({ value }) => {
+        if (!value) {
+          this.$message({
+            type: 'error',
+            message: '用例名必须填写'
+          })
+          return
+        }
+        this.post('/doc-cases', {
+          name: value,
+          swaggerId: this.currentItem.swaggerId,
+          path: this.currentItem.path,
+          method: this.currentItem.method,
+          content: JSON.stringify(this.getParamMap())
+        }, (resp) => {
+          this.cases.unshift(resp.data)
+          this.$message({
+            type: 'success',
+            message: '保存用例成功'
+          })
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消保存用例'
+        })
       })
     },
     bindUrl(item) {
@@ -402,11 +529,11 @@ export default {
           }
         }
       })
-      this.headerData = headerData
-      this.queryData = queryData
-      this.formData = formData
-      this.multipartData = multipartData
-      this.pathData = pathData
+      this.requestInfo.headerData = headerData
+      this.requestInfo.queryData = queryData
+      this.requestInfo.formData = formData
+      this.requestInfo.multipartData = multipartData
+      this.requestInfo.pathData = pathData
       const bodyParams = requestParameters.filter(row => row.in === 'body')
       const hasBody = bodyParams.length > 0
       if (hasBody) {
@@ -421,21 +548,21 @@ export default {
             jsonObj = [jsonObj]
           }
         }
-        this.jsonBody = JSON.stringify(jsonObj, null, 4)
+        this.requestInfo.jsonBody = JSON.stringify(jsonObj, null, 4)
       }
-      this.requestActive = isQueryStringMethod ? 'query' : 'body'
-      if (this.multipartData.length > 0) {
-        this.postActive = 'multipart'
+      this.requestInfo.requestActive = isQueryStringMethod ? 'query' : 'body'
+      if (this.requestInfo.multipartData.length > 0) {
+        this.requestInfo.postActive = 'multipart'
       } else {
         let active = ''
         if (hasBody) {
           active = 'text'
-        } else if (this.formData.length > 0) {
+        } else if (this.requestInfo.formData.length > 0) {
           active = 'form'
         }
-        this.postActive = active
-        if (!this.postActive) {
-          this.requestActive = 'query'
+        this.requestInfo.postActive = active
+        if (!this.requestInfo.postActive) {
+          this.requestInfo.requestActive = 'query'
         }
       }
     },
@@ -443,10 +570,10 @@ export default {
       return ['get', 'head'].indexOf(item.method.toLowerCase()) > -1
     },
     hasBody() {
-      return this.jsonBody.length > 0 || this.formData.length > 0 || this.multipartData.length > 0
+      return this.requestInfo.jsonBody.length > 0 || this.requestInfo.formData.length > 0 || this.requestInfo.multipartData.length > 0
     },
     showBody(active) {
-      return this.postActive === active
+      return this.requestInfo.postActive === active
     },
     onSelectFile(f, fileList, row) {
       const files = []
@@ -467,26 +594,26 @@ export default {
     send() {
       const item = this.currentItem
       const headers = this.buildRequestHeaders()
-      let data = this.getParamObj(this.queryData)
+      let data = this.getParamObj(this.requestInfo.queryData)
       let isJson = false
       let isForm = false
       let isMultipart = false
       // 如果请求body
-      switch (this.postActive) {
+      switch (this.requestInfo.postActive) {
         case 'text':
           headers['Content-Type'] = this.contentType
-          data = this.jsonBody
+          data = this.requestInfo.jsonBody
           if (this.contentType.indexOf('json') > -1) {
             isJson = true
           }
           break
         case 'form':
           isForm = true
-          data = this.getParamObj(this.formData)
+          data = this.getParamObj(this.requestInfo.formData)
           break
         case 'multipart':
-          isMultipart = this.multipartData.length > 0 || this.uploadFiles.length > 0
-          data = this.getParamObj(this.multipartData)
+          isMultipart = this.requestInfo.multipartData.length > 0 || this.uploadFiles.length > 0
+          data = this.getParamObj(this.requestInfo.multipartData)
           break
         default:
       }
@@ -500,26 +627,26 @@ export default {
       if (this.authorization) {
         headers['Authorization'] = 'Bearer ' + this.authorization
       }
-      let data = this.getParamObj(this.queryData)
+      let data = this.getParamObj(this.requestInfo.queryData)
       let isJson = false
       let isForm = false
       let isMultipart = false
       // 如果请求body
-      switch (this.postActive) {
+      switch (this.requestInfo.postActive) {
         case 'text':
           headers['Content-Type'] = this.contentType
-          data = this.jsonBody
+          data = this.requestInfo.jsonBody
           if (this.contentType.indexOf('json') > -1) {
             isJson = true
           }
           break
         case 'form':
           isForm = true
-          data = this.getParamObj(this.formData)
+          data = this.getParamObj(this.requestInfo.formData)
           break
         case 'multipart':
-          isMultipart = this.multipartData.length > 0 || this.uploadFiles.length > 0
-          data = this.getParamObj(this.multipartData)
+          isMultipart = this.requestInfo.multipartData.length > 0 || this.uploadFiles.length > 0
+          data = this.getParamObj(this.requestInfo.multipartData)
           break
         default:
       }
@@ -528,10 +655,10 @@ export default {
     },
     buildRequestHeaders() {
       const headers = {}
-      this.headerData.forEach(row => {
+      this.requestInfo.headerData.forEach(row => {
         headers[row.name] = row.example || ''
       })
-      this.globalHeaderData.forEach(row => {
+      this.requestInfo.globalHeaderData.forEach(row => {
         headers[row.configKey] = row.configValue
       })
       headers['target-url'] = this.url

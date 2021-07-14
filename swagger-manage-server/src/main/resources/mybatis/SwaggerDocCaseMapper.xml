@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE  mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- generate by https://gitee.com/durcframework/code-gen -->
+<mapper namespace="com.mafgwo.swagger.manage.server.mapper.SwaggerDocCaseMapper">
+
+    <insert id="insert" parameterType="com.mafgwo.swagger.manage.server.entity.SwaggerDocCase"
+            keyProperty="id" keyColumn="id" useGeneratedKeys="true">
+        INSERT INTO swagger_doc_case
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            swagger_id,
+            `name`,
+            `path`,
+            `method`,
+            content,
+            created_at,
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            #{swaggerId},
+            #{name},
+            #{path},
+            #{method},
+            #{content},
+            #{createdAt},
+        </trim>
+
+    </insert>
+</mapper>

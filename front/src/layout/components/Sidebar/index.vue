@@ -35,7 +35,7 @@
           <div v-else>
             <el-submenu :index="item.path">
               <template v-show="!item.hidden" slot="title">
-                <i :class="item.icon"></i>
+                <i :class="item.icon" />
                 <span slot="title">{{ item.meta && item.meta.title }}</span>
               </template>
               <div v-for="(child) in item.children" v-show="!child.hidden" :key="child.path">
@@ -191,11 +191,11 @@ export default {
       return target && target.toLowerCase().indexOf(searchText.toLowerCase()) > -1
     },
     loadDocName(val) {
-      let swaggerName = this.swaggerIdNameMap[val]
+      const swaggerName = this.swaggerIdNameMap[val]
       if (!swaggerName) {
-        let uri = '/swagger/get/first';
+        let uri = '/swagger/get/first'
         if (val) {
-          uri = '/swagger/' + val;
+          uri = '/swagger/' + val
         }
         this.get(uri, {}, resp => {
           const data = resp.data
@@ -211,8 +211,8 @@ export default {
       return this.typeMap[method] || ''
     },
     getMenuItemStyle(method) {
-      const color = this.getColor(method);
-      return color ? {color: this.getColor(method)} : {}
+      const color = this.getColor(method)
+      return color ? { color: this.getColor(method) } : {}
     },
     hasOneChild(children) {
       if (children && children.length === 1 && children[0].meta.showOne) {

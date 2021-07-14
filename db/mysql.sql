@@ -42,3 +42,15 @@ CREATE TABLE `system_config` (
   `config_value` varchar(128) NOT NULL DEFAULT '' COMMENT '配置值',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统配置';
+
+
+CREATE TABLE `swagger_doc_case` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL DEFAULT '' COMMENT '用例名称',
+  `swagger_id` int(11) DEFAULT NULL COMMENT 'swaggerId',
+  `path` varchar(255) NOT NULL DEFAULT '' COMMENT '接口path',
+  `method` varchar(36) NOT NULL DEFAULT '' COMMENT '接口method',
+  `content` varchar(5000) NOT NULL DEFAULT '' COMMENT '接口入参格式：{"token": "xxxx", "pathParams": {}, "headerParams": {}, "queryParams": {}, "body": ""}',
+  `created_at` datetime DEFAULT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='接口文档用例';

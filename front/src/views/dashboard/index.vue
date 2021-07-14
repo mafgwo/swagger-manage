@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-container">
-    <div class="dashboard-text">欢迎使用Swagger接口管理平台</div>
+    <div class="dashboard-text">欢迎使用智光Swagger接口管理平台</div>
   </div>
 </template>
 

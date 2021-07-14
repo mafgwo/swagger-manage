@@ -1,7 +1,7 @@
 import Cookies from 'js-cookie'
 import Vue from 'vue'
 
-const TokenKey = 'swagger-manage-token'
+const TokenKey = 'swagger-admin-token'
 
 export function getToken() {
   return Cookies.get(TokenKey)

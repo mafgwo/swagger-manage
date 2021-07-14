@@ -13,8 +13,8 @@
               >
                 <span style="float: left">{{ group.name }}</span>
                 <span style="float: right; color: #8492a6; font-size: 13px">
-                  <el-link type="primary" icon="el-icon-edit" style="margin-right: 20px;" @click.stop="onProjectUpdate(item)"></el-link>
-                  <el-link type="danger" icon="el-icon-delete" @click.stop="onProjectDelete(item)"></el-link>
+                  <el-link type="primary" icon="el-icon-edit" style="margin-right: 20px;" @click.stop="onProjectUpdate(item)" />
+                  <el-link type="danger" icon="el-icon-delete" @click.stop="onProjectDelete(item)" />
                 </span>
               </el-option>
             </div>
@@ -22,8 +22,8 @@
               <li class="el-select-group__title">
                 <span style="float: left;margin-right: 20px;">{{ item.name || item.host }} </span>
                 <span style="float: right; color: #8492a6; font-size: 13px;padding-right: 20px;">
-                  <el-link type="primary" icon="el-icon-edit" style="margin-right: 20px;" @click.stop="onProjectUpdate(item)"></el-link>
-                  <el-link type="danger" icon="el-icon-delete" @click.stop="onProjectDelete(item)"></el-link>
+                  <el-link type="primary" icon="el-icon-edit" style="margin-right: 20px;" @click.stop="onProjectUpdate(item)" />
+                  <el-link type="danger" icon="el-icon-delete" @click.stop="onProjectDelete(item)" />
                 </span>
               </li>
               <el-option
@@ -52,7 +52,6 @@
             @click="refreshDoc"
           />
         </el-tooltip>
-        <el-link type="primary" :underline="false" href="https://github.com/mafgwo/swagger-manage" target="_blank">Github</el-link>-->
       </div>
     </div>
     <el-dialog
@@ -150,7 +149,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="importJsonDlgShow = false">取 消</el-button>
-        <el-button :loading="importJsonLoading" type="primary"  @click="onImportJsonSave">导 入</el-button>
+        <el-button :loading="importJsonLoading" type="primary" @click="onImportJsonSave">导 入</el-button>
       </div>
     </el-dialog>
   </div>
@@ -218,6 +217,11 @@ export default {
     ]),
     stateSwaggerId() {
       return this.$store.state.settings.swaggerId
+    }
+  },
+  watch: {
+    stateSwaggerId(val) {
+      this.swaggerId = val + ''
     }
   },
   created() {
@@ -359,11 +363,6 @@ export default {
         }
         obj.host = host
       }
-    }
-  },
-  watch: {
-    stateSwaggerId(val) {
-      this.swaggerId = val + ''
     }
   }
 }

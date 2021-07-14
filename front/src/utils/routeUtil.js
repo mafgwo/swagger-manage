@@ -3,7 +3,7 @@ import Vue from 'vue'
 
 const docPage = 'doc/index'
 const dashboardPage = 'dashboard/index'
-const settingPage = 'setting/index'
+// const settingPage = 'setting/index'
 let name_id = 0
 
 Object.assign(Vue.prototype, {

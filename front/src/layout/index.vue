@@ -3,7 +3,7 @@
     <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside" />
     <sidebar id="leftPanel" class="sidebar-container" />
     <div id="rightPanel" class="main-container">
-      <div id="resizeBar"></div>
+      <div id="resizeBar" />
       <div :class="{'fixed-header':fixedHeader}">
         <navbar />
         <tags-view v-if="showTagsView" />
@@ -18,7 +18,7 @@ import { Navbar, Sidebar, AppMain, TagsView } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
 import variables from '@/styles/variables.scss'
 
-const LEFT_WIDTH_KEY = 'swagger-manage-menuwidth'
+const LEFT_WIDTH_KEY = 'swagger-admin-menuwidth'
 const RESIZE_BAR_MARGIN_LEFT = `${-parseInt(variables.resizeBarWidth) / 2}px`
 const OPACITY_1 = '1'
 const OPACITY_0 = '0'

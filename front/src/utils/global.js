@@ -17,7 +17,7 @@ const client = axios.create({
 const Base64 = require('js-base64').Base64
 
 const baseURL = process.env.VUE_APP_BASE_API || `${location.protocol}//${location.host}`
-const swaggerIdKey = 'swagger-manage-swaggerid'
+const swaggerIdKey = 'swagger-admin-swaggerid'
 
 const TYPE_VALUE = {
   boolean: true,

@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: 'Swagger接口管理平台',
+  title: '智光Swagger接口管理平台',
 
   /**
    * @type {boolean} true | false

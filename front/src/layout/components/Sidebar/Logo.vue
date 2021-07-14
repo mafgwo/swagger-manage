@@ -15,7 +15,7 @@ export default {
   props: {
     title: {
       type: String,
-      default: 'Swagger接口管理平台'
+      default: '智光Swagger接口管理平台'
     },
     collapse: {
       type: Boolean,

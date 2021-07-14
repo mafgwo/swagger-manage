@@ -111,7 +111,7 @@ export default {
   },
   methods: {
     loadSettings() {
-      const swaggerId = this.getUrlSwaggerId() || this.getSwaggerId();
+      const swaggerId = this.getUrlSwaggerId() || this.getSwaggerId()
       this.get('/systemconfig/get', { swaggerId: swaggerId }, resp => {
         this.settings = resp.data
       })
@@ -149,7 +149,7 @@ export default {
       this.$refs.dialogHeaderForm.validate((valid) => {
         if (valid) {
           const uri = this.dialogHeaderFormData.id ? '/systemconfig/globalHeader/update' : '/systemconfig/globalHeader/add'
-          this.dialogHeaderFormData.swaggerId = this.getUrlSwaggerId() || this.getSwaggerId();
+          this.dialogHeaderFormData.swaggerId = this.getUrlSwaggerId() || this.getSwaggerId()
           this.post(uri, this.dialogHeaderFormData, () => {
             this.dialogHeaderVisible = false
             this.loadHeaders()
