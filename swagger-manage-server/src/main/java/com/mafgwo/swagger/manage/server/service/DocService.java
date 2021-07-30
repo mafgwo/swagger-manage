@@ -23,17 +23,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -177,54 +176,32 @@ public class DocService {
             throw new RuntimeException("同步文档出错：文档内容不存在");
         }
         List<SwaggerResource> swaggerResources = JSON.parseArray(swaggerGroupInfo, SwaggerResource.class);
-        List<SwaggerInfo> swaggerInfoList = new ArrayList<>(swaggerResources.size());
-        Map<String, SwaggerInfo> swaggerInfoMap = swaggerInfoMapper.listByProjectId(projectId)
-                .stream()
-                .collect(Collectors.toMap(SwaggerInfo::getName, Function.identity()));
-        swaggerResources.forEach(swaggerResource -> {
-            String name = swaggerResource.name;
-            String projectName = projectInfo.getName();
-            if ("default".equals(name)) {
-                name = StringUtils.isEmpty(projectName) ? projectInfo.getHost() : projectName;
-            }
-            String groupUrl = this.getGroupUrl(swaggerResource);
-            String swaggerUrl = projectInfo.getHost() + groupUrl;
-            String docContent = this.fetchSwaggerDoc(swaggerUrl, projectInfo);
-            SwaggerInfo swaggerInfo = swaggerInfoMap.get(name);
-            // 新增
-            if (swaggerInfo == null) {
-                swaggerInfo = new SwaggerInfo();
-                swaggerInfo.setProjectId(projectId);
-                swaggerInfo.setName(name);
-                swaggerInfo.setUrl(groupUrl);
-                swaggerInfo.setDocContent(docContent);
-                swaggerInfoMapper.insertIgnoreNull(swaggerInfo);
-            } else {
-                // 修改
-                swaggerInfo.setUrl(groupUrl);
-                swaggerInfo.setDocContent(docContent);
-                swaggerInfoMapper.update(swaggerInfo);
-            }
-            swaggerInfoList.add(swaggerInfo);
-        });
-
-        // 删除
-        List<SwaggerInfo> swaggerInfoTobeDelete = swaggerInfoMap.values()
-                .stream()
-                .filter(swaggerInfo -> {
-                    boolean isDeleted = true;
-                    for (SwaggerInfo info : swaggerInfoList) {
-                        // 如果存在，表示没有删除
-                        if (info.getName().equals(swaggerInfo.getName())) {
-                            isDeleted = false;
-                            break;
-                        }
-                    }
-                    return isDeleted;
-                })
-                .collect(Collectors.toList());
-        if (!swaggerInfoTobeDelete.isEmpty()) {
-            swaggerInfoMapper.deleteBatch(swaggerInfoTobeDelete);
+        if (CollectionUtils.isEmpty(swaggerResources)) {
+            throw new RuntimeException("swagger还未初始化完成，等会再试");
+        }
+        SwaggerResource swaggerResource = swaggerResources.get(0);
+        List<SwaggerInfo> swaggerInfoList = swaggerInfoMapper.listByProjectId(projectId);
+        SwaggerInfo swaggerInfo = swaggerInfoList.size() > 0 ? swaggerInfoList.get(0) : new SwaggerInfo();
+        String name = swaggerResource.name;
+        String projectName = projectInfo.getName();
+        if ("default".equals(name)) {
+            name = StringUtils.isEmpty(projectName) ? projectInfo.getHost() : projectName;
+        }
+        String groupUrl = this.getGroupUrl(swaggerResource);
+        String swaggerUrl = projectInfo.getHost() + groupUrl;
+        String docContent = this.fetchSwaggerDoc(swaggerUrl, projectInfo);
+        // 新增
+        if (swaggerInfo.getId() == null) {
+            swaggerInfo.setProjectId(projectId);
+            swaggerInfo.setName(name);
+            swaggerInfo.setUrl(groupUrl);
+            swaggerInfo.setDocContent(docContent);
+            swaggerInfoMapper.insertIgnoreNull(swaggerInfo);
+        } else {
+            // 修改
+            swaggerInfo.setUrl(groupUrl);
+            swaggerInfo.setDocContent(docContent);
+            swaggerInfoMapper.update(swaggerInfo);
         }
         return swaggerInfoList;
 
