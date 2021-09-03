@@ -199,15 +199,22 @@ public class SwaggerDocParserV3 implements DocParser {
                     docParameterList.addAll(parameterList);
                 }
             } else {
-                fieldJson = formatFieldJson(docRoot, fieldJson);
-                DocParameter docParameter = fieldJson.toJavaObject(DocParameter.class);
-                // @RequestBody String reqEntity
-                // 这种情况下name为null
-                if (docParameter.getName() == null) {
-                    continue;
+                // 如果是上传文件
+                if (schemaJson != null && "string".equals(schemaJson.getString("type")) && "binary".equals(schemaJson.getString("format"))) {
+                    DocParameter docParameter = fieldJson.toJavaObject(DocParameter.class);
+                    docParameter.setType("file");
+                    docParameterList.add(docParameter);
+                } else {
+                    fieldJson = formatFieldJson(docRoot, fieldJson);
+                    DocParameter docParameter = fieldJson.toJavaObject(DocParameter.class);
+                    // @RequestBody String reqEntity
+                    // 这种情况下name为null
+                    if (docParameter.getName() == null) {
+                        continue;
+                    }
+                    this.setType(fieldJson, docParameter);
+                    docParameterList.add(docParameter);
                 }
-                this.setType(fieldJson, docParameter);
-                docParameterList.add(docParameter);
             }
         }
         return formatDocParameters(docParameterList);
