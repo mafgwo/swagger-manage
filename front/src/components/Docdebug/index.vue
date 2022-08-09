@@ -18,6 +18,13 @@
           <span slot="prepend">
             网关token
           </span>
+          <span v-if="currentItem && currentItem.method === 'GET'" slot="append">
+            自动签名：
+            <el-radio-group v-model="signFlag">
+              <el-radio :label="1">是</el-radio>
+              <el-radio :label="0">否</el-radio>
+            </el-radio-group>
+          </span>
         </el-input>
         <div v-show="requestInfo.pathData.length > 0" class="path-param">
           <el-table
@@ -293,6 +300,8 @@
   .path-param {margin-top: 5px;}
 </style>
 <script>
+
+import md5 from 'js-md5'
 require('fast-text-encoding')
 const xmlFormatter = require('xml-formatter')
 export default {
@@ -305,6 +314,7 @@ export default {
   },
   data() {
     return {
+      signFlag: 0,
       rightSpanSize: 0,
       currentItem: null,
       itemMap: null,
@@ -401,6 +411,7 @@ export default {
     useCase(caseObj) {
       const requestInfo = JSON.parse(caseObj.content)
       this.authorization = requestInfo.authorization
+      this.signFlag = requestInfo.signFlag || 0
       this.requestInfo.requestActive = requestInfo.requestActive
       this.requestInfo.postActive = requestInfo.postActive
       this.requestInfo.jsonBody = requestInfo.jsonBody
@@ -430,6 +441,7 @@ export default {
     getParamMap() {
       return {
         authorization: this.authorization,
+        signFlag: this.signFlag,
         requestActive: this.requestInfo.requestActive,
         postActive: this.requestInfo.postActive,
         jsonBody: this.requestInfo.jsonBody,
@@ -651,7 +663,21 @@ export default {
         default:
       }
       this.sendLoading = true
+      // 如果需要自动签名并且当前method是GET则自动签名
+      if (item.method === 'GET' && this.signFlag && this.gatewayUrl) {
+        const time = new Date().getTime()
+        let uri = this.gatewayUrl.split('//')[1]
+        uri = uri.substr(uri.indexOf('/'))
+        const paramStr = this.queryStr()
+        const signStr = `${uri}${this.authorization}${time}${paramStr}`
+        const sign = md5(signStr)
+        headers['x-zg-time'] = time
+        headers['x-zg-sign'] = sign
+      }
       this.request(item.method, '/doc/proxy', data, headers, isJson, isForm, isMultipart, this.doProxyResponse)
+    },
+    queryStr() {
+      return this.requestInfo.queryData.filter(it => it.example).sort((n1, n2) => n1.name > n2.name ? 1 : -1).map(it => `${it.name}=${it.example}`).join('&')
     },
     buildRequestHeaders() {
       const headers = {}
