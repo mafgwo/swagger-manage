@@ -278,7 +278,13 @@ public class SwaggerDocParserV3 implements DocParser {
                     .orElse("string"));
             docParameter.setElementType(elementType);
         } else if (type == null) {
-            String refStr = fieldJson.getString("$ref");
+            String refStr = null;
+            JSONArray allOf = fieldJson.getJSONArray("allOf");
+            if (allOf != null) {
+                refStr = allOf.getJSONObject(0).getString("$ref");
+            } else {
+                refStr = fieldJson.getString("$ref");
+            }
             if (refStr != null) {
                 docParameter.setElementType(refStr.substring(refStr.lastIndexOf("/") + 1));
             }
@@ -428,7 +434,12 @@ public class SwaggerDocParserV3 implements DocParser {
             }
         }
         if (ref == null) {
-            return null;
+            JSONArray allOf = schema.getJSONArray("allOf");
+            if (allOf != null) {
+                ref = allOf.getJSONObject(0).getString("$ref");
+            } else {
+                return null;
+            }
         }
         RefInfo refInfo = new RefInfo();
         refInfo.setIsArray(isArray);
